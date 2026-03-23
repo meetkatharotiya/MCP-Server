@@ -42,8 +42,4 @@ public class ProductService {
         return products.remove(id) != null;
     }
 
-    public void clearAll() {
-        products.clear();
-        idGenerator.set(1);
-    }
 }

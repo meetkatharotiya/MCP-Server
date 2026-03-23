@@ -9,10 +9,6 @@ import org.springframework.context.annotation.Configuration;
 
 import java.math.BigDecimal;
 
-/**
- * Configuration class to seed the in-memory database on startup.
- * Using CommandLineRunner is a standard practice for dev-data setup.
- */
 @Slf4j
 @Configuration
 public class DataInitializer {
