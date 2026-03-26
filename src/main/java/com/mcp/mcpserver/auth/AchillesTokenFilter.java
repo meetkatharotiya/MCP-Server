@@ -1,6 +1,8 @@
 package com.mcp.mcpserver.auth;
 
 import com.flock.achillesclient.AchillesClient;
+import com.flock.achillesclient.req.oauth2.OAuth2IntrospectRequest;
+import com.flock.achillesclient.resp.oauth2.OAuth2IntrospectionResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +22,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AchillesTokenFilter extends OncePerRequestFilter {
 
+    private static final String INTERNAL_CLIENT_ID = "internal_service";
+    private static final String INTERNAL_SHARED_SECRET = "change-me-in-production";
+
     private final AchillesClient achillesClient;
 
     @Override
@@ -31,14 +36,22 @@ public class AchillesTokenFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             try {
-                var session = achillesClient.validateAndGet(token);
-                if (session != null) {
+                OAuth2IntrospectionResponse introspection = achillesClient.introspectToken(
+                    new OAuth2IntrospectRequest()
+                        .token(token)
+                        .internalClientId(INTERNAL_CLIENT_ID)
+                        .sharedSecret(INTERNAL_SHARED_SECRET)
+                );
+                if (introspection.active()) {
                     SecurityContextHolder.getContext().setAuthentication(
-                            new UsernamePasswordAuthenticationToken(session, null, List.of())
+                        new UsernamePasswordAuthenticationToken(introspection.email(), null, List.of())
                     );
+                    log.debug("Token valid for user: {}", introspection.email());
+                } else {
+                    log.warn("Token introspection returned active=false");
                 }
             } catch (Exception e) {
-                log.warn("Token validation failed: {}", e.getMessage());
+                log.warn("Token validation failed: {}", e.getMessage(), e);
             }
         }
 

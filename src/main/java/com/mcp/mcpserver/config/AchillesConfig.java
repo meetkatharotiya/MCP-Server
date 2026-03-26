@@ -15,7 +15,7 @@ public class AchillesConfig {
 
     @Bean
     public AchillesClient achillesClient() {
-        return AchillesClientConfig.newConfig(STAGING, AppService.hephaestus)
+        return AchillesClientConfig.newConfig(STAGING, AppService.achilles)
                 .getClient();
     }
 }

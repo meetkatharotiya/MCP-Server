@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 public class Application {
 
     public static void main(String[] args) {
+        System.setProperty("http.client.force.use.lb.url","true");
         SpringApplication.run(Application.class, args);
     }
 }

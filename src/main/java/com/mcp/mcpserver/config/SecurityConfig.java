@@ -30,7 +30,7 @@ public class SecurityConfig {
             )
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint((request, response, e) -> {
-                    response.setHeader("WWW-Authenticate", "Bearer realm=\"mcp\"");
+                    response.setHeader("WWW-Authenticate", "Bearer realm=\"mcp\", authorization_uri=\"https://flockmail-backend.flock-staging.com/oauth2/authorize\"");
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                 })
             )
